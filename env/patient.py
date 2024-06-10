@@ -6,7 +6,7 @@ class Patient:
     def __init__(self, register_id, arrival_time):
         self.register_id = register_id
         self.emergency_status = False
-        self.deadline = 180 + arrival_time
+        self.deadline = 180
         self.alive = True
         self.arrival_time = arrival_time
         self.treatment_time = 0
@@ -52,7 +52,7 @@ class Emergence_Patient(Patient):
     def __init__(self, register_id, arrival_time):
         super().__init__(register_id, arrival_time)
         self.set_emergency()
-        self.set_deadline(np.random.poisson(60, 1)[0] + arrival_time)
+        self.set_deadline(np.random.poisson(60, 1)[0])
         self.set_treatment_time(np.random.exponential(60))  # 평균 60분 치료 시간
 
     def __str__(self):
@@ -62,8 +62,8 @@ class Emergence_Patient(Patient):
 class Naive_Patient(Patient):
     def __init__(self, register_id, arrival_time):
         super().__init__(register_id, arrival_time)
-        self.set_deadline(np.random.poisson(180, 1)[0] + arrival_time)
-        self.set_treatment_time(np.random.exponential(30))  # 평균 30분 치료 시간
+        self.set_deadline(np.inf)  # 무한대 데드라인
+        self.set_treatment_time(np.random.exponential(10))  # 평균 30분 치료 시간
 
     def __str__(self):
         return "Register ID: {}, Emergency: {}, Deadline: {}, Alive: {}, Treatment Time: {}".format(
@@ -73,8 +73,8 @@ class Nylon_Patient(Patient):
     def __init__(self, register_id, arrival_time):
         super().__init__(register_id, arrival_time)
         self.set_emergency()
-        self.set_deadline(np.random.poisson(1440, 1)[0] + arrival_time)
-        self.set_treatment_time(np.random.exponential(10))  # 평균 10분 치료 시간
+        self.set_deadline(np.inf)  # 무한대 데드라인
+        self.set_treatment_time(np.random.exponential(3))  # 평균 10분 치료 시간
 
     def __str__(self):
         return "Register ID: {}, Emergency: {}, Deadline: {}, Alive: {}, Treatment Time: {}".format(
