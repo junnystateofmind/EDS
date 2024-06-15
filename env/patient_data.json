@@ -1,0 +1,802 @@
+[
+    {
+        "register_id": 1,
+        "arrival_time": 10,
+        "type": "emergence",
+        "deadline": 53,
+        "treatment_time": 63.05662428563838,
+        "emergency_status": true
+    },
+    {
+        "register_id": 2,
+        "arrival_time": 22,
+        "type": "emergence",
+        "deadline": 60,
+        "treatment_time": 6.428460632384019,
+        "emergency_status": true
+    },
+    {
+        "register_id": 3,
+        "arrival_time": 31,
+        "type": "emergence",
+        "deadline": 56,
+        "treatment_time": 170.0555901806913,
+        "emergency_status": true
+    },
+    {
+        "register_id": 4,
+        "arrival_time": 41,
+        "type": "nylon",
+        "deadline": "inf",
+        "treatment_time": 3.5560152057809304,
+        "emergency_status": true
+    },
+    {
+        "register_id": 5,
+        "arrival_time": 52,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 1.8026330747433625,
+        "emergency_status": false
+    },
+    {
+        "register_id": 6,
+        "arrival_time": 65,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 4.211878252408902,
+        "emergency_status": false
+    },
+    {
+        "register_id": 7,
+        "arrival_time": 76,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 2.313708864564206,
+        "emergency_status": false
+    },
+    {
+        "register_id": 8,
+        "arrival_time": 90,
+        "type": "emergence",
+        "deadline": 62,
+        "treatment_time": 23.360471181767014,
+        "emergency_status": true
+    },
+    {
+        "register_id": 9,
+        "arrival_time": 99,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 9.05495853152491,
+        "emergency_status": false
+    },
+    {
+        "register_id": 10,
+        "arrival_time": 104,
+        "type": "nylon",
+        "deadline": "inf",
+        "treatment_time": 5.059054306474573,
+        "emergency_status": true
+    },
+    {
+        "register_id": 11,
+        "arrival_time": 116,
+        "type": "emergence",
+        "deadline": 60,
+        "treatment_time": 74.19720986368037,
+        "emergency_status": true
+    },
+    {
+        "register_id": 12,
+        "arrival_time": 124,
+        "type": "emergence",
+        "deadline": 71,
+        "treatment_time": 170.16104301174045,
+        "emergency_status": true
+    },
+    {
+        "register_id": 13,
+        "arrival_time": 129,
+        "type": "nylon",
+        "deadline": "inf",
+        "treatment_time": 3.2581499533148612,
+        "emergency_status": true
+    },
+    {
+        "register_id": 14,
+        "arrival_time": 134,
+        "type": "emergence",
+        "deadline": 62,
+        "treatment_time": 16.795438297549488,
+        "emergency_status": true
+    },
+    {
+        "register_id": 15,
+        "arrival_time": 147,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 0.4649781725572885,
+        "emergency_status": false
+    },
+    {
+        "register_id": 16,
+        "arrival_time": 154,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 8.158725387175101,
+        "emergency_status": false
+    },
+    {
+        "register_id": 17,
+        "arrival_time": 165,
+        "type": "nylon",
+        "deadline": "inf",
+        "treatment_time": 0.4245754631874039,
+        "emergency_status": true
+    },
+    {
+        "register_id": 18,
+        "arrival_time": 169,
+        "type": "emergence",
+        "deadline": 44,
+        "treatment_time": 19.426788265980253,
+        "emergency_status": true
+    },
+    {
+        "register_id": 19,
+        "arrival_time": 182,
+        "type": "emergence",
+        "deadline": 67,
+        "treatment_time": 79.51349947754274,
+        "emergency_status": true
+    },
+    {
+        "register_id": 20,
+        "arrival_time": 186,
+        "type": "nylon",
+        "deadline": "inf",
+        "treatment_time": 0.854612062629784,
+        "emergency_status": true
+    },
+    {
+        "register_id": 21,
+        "arrival_time": 198,
+        "type": "emergence",
+        "deadline": 54,
+        "treatment_time": 49.02907705520576,
+        "emergency_status": true
+    },
+    {
+        "register_id": 22,
+        "arrival_time": 213,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 7.8580699413107835,
+        "emergency_status": false
+    },
+    {
+        "register_id": 23,
+        "arrival_time": 225,
+        "type": "emergence",
+        "deadline": 50,
+        "treatment_time": 85.45557205775809,
+        "emergency_status": true
+    },
+    {
+        "register_id": 24,
+        "arrival_time": 236,
+        "type": "emergence",
+        "deadline": 66,
+        "treatment_time": 82.27827823183189,
+        "emergency_status": true
+    },
+    {
+        "register_id": 25,
+        "arrival_time": 251,
+        "type": "emergence",
+        "deadline": 67,
+        "treatment_time": 50.942300681221724,
+        "emergency_status": true
+    },
+    {
+        "register_id": 26,
+        "arrival_time": 256,
+        "type": "emergence",
+        "deadline": 69,
+        "treatment_time": 171.9918191123195,
+        "emergency_status": true
+    },
+    {
+        "register_id": 27,
+        "arrival_time": 273,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 54.69763374894917,
+        "emergency_status": false
+    },
+    {
+        "register_id": 28,
+        "arrival_time": 283,
+        "type": "emergence",
+        "deadline": 53,
+        "treatment_time": 58.656560503400485,
+        "emergency_status": true
+    },
+    {
+        "register_id": 29,
+        "arrival_time": 290,
+        "type": "emergence",
+        "deadline": 70,
+        "treatment_time": 106.43134792632945,
+        "emergency_status": true
+    },
+    {
+        "register_id": 30,
+        "arrival_time": 303,
+        "type": "emergence",
+        "deadline": 69,
+        "treatment_time": 20.6381451831626,
+        "emergency_status": true
+    },
+    {
+        "register_id": 31,
+        "arrival_time": 309,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 0.2655222959888257,
+        "emergency_status": false
+    },
+    {
+        "register_id": 32,
+        "arrival_time": 323,
+        "type": "emergence",
+        "deadline": 46,
+        "treatment_time": 18.835449154213368,
+        "emergency_status": true
+    },
+    {
+        "register_id": 33,
+        "arrival_time": 337,
+        "type": "emergence",
+        "deadline": 55,
+        "treatment_time": 81.67655576014981,
+        "emergency_status": true
+    },
+    {
+        "register_id": 34,
+        "arrival_time": 348,
+        "type": "emergence",
+        "deadline": 56,
+        "treatment_time": 23.58453922453268,
+        "emergency_status": true
+    },
+    {
+        "register_id": 35,
+        "arrival_time": 362,
+        "type": "emergence",
+        "deadline": 58,
+        "treatment_time": 3.7169049073227693,
+        "emergency_status": true
+    },
+    {
+        "register_id": 36,
+        "arrival_time": 367,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 6.267116949516783,
+        "emergency_status": false
+    },
+    {
+        "register_id": 37,
+        "arrival_time": 375,
+        "type": "emergence",
+        "deadline": 53,
+        "treatment_time": 89.01491845739976,
+        "emergency_status": true
+    },
+    {
+        "register_id": 38,
+        "arrival_time": 384,
+        "type": "emergence",
+        "deadline": 60,
+        "treatment_time": 39.38083490235242,
+        "emergency_status": true
+    },
+    {
+        "register_id": 39,
+        "arrival_time": 391,
+        "type": "emergence",
+        "deadline": 58,
+        "treatment_time": 199.3849348444741,
+        "emergency_status": true
+    },
+    {
+        "register_id": 40,
+        "arrival_time": 400,
+        "type": "emergence",
+        "deadline": 63,
+        "treatment_time": 4.667125317058926,
+        "emergency_status": true
+    },
+    {
+        "register_id": 41,
+        "arrival_time": 413,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 1.7391671761889649,
+        "emergency_status": false
+    },
+    {
+        "register_id": 42,
+        "arrival_time": 423,
+        "type": "emergence",
+        "deadline": 49,
+        "treatment_time": 26.456143162187384,
+        "emergency_status": true
+    },
+    {
+        "register_id": 43,
+        "arrival_time": 437,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 8.304760333716825,
+        "emergency_status": false
+    },
+    {
+        "register_id": 44,
+        "arrival_time": 448,
+        "type": "emergence",
+        "deadline": 55,
+        "treatment_time": 190.96591747015844,
+        "emergency_status": true
+    },
+    {
+        "register_id": 45,
+        "arrival_time": 461,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 5.05257229591564,
+        "emergency_status": false
+    },
+    {
+        "register_id": 46,
+        "arrival_time": 472,
+        "type": "emergence",
+        "deadline": 48,
+        "treatment_time": 15.488592578578755,
+        "emergency_status": true
+    },
+    {
+        "register_id": 47,
+        "arrival_time": 479,
+        "type": "emergence",
+        "deadline": 60,
+        "treatment_time": 3.8082218285476492,
+        "emergency_status": true
+    },
+    {
+        "register_id": 48,
+        "arrival_time": 484,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 2.8256056027102443,
+        "emergency_status": false
+    },
+    {
+        "register_id": 49,
+        "arrival_time": 489,
+        "type": "emergence",
+        "deadline": 59,
+        "treatment_time": 11.02781326740627,
+        "emergency_status": true
+    },
+    {
+        "register_id": 50,
+        "arrival_time": 494,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 29.586650409223978,
+        "emergency_status": false
+    },
+    {
+        "register_id": 51,
+        "arrival_time": 506,
+        "type": "emergence",
+        "deadline": 62,
+        "treatment_time": 0.5590372534805176,
+        "emergency_status": true
+    },
+    {
+        "register_id": 52,
+        "arrival_time": 518,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 14.415977172845189,
+        "emergency_status": false
+    },
+    {
+        "register_id": 53,
+        "arrival_time": 533,
+        "type": "emergence",
+        "deadline": 60,
+        "treatment_time": 263.6665531274022,
+        "emergency_status": true
+    },
+    {
+        "register_id": 54,
+        "arrival_time": 539,
+        "type": "emergence",
+        "deadline": 63,
+        "treatment_time": 5.806912000676732,
+        "emergency_status": true
+    },
+    {
+        "register_id": 55,
+        "arrival_time": 548,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 1.7246700146937273,
+        "emergency_status": false
+    },
+    {
+        "register_id": 56,
+        "arrival_time": 560,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 11.149224178465502,
+        "emergency_status": false
+    },
+    {
+        "register_id": 57,
+        "arrival_time": 566,
+        "type": "emergence",
+        "deadline": 67,
+        "treatment_time": 19.014275979334165,
+        "emergency_status": true
+    },
+    {
+        "register_id": 58,
+        "arrival_time": 580,
+        "type": "emergence",
+        "deadline": 53,
+        "treatment_time": 123.85842832200207,
+        "emergency_status": true
+    },
+    {
+        "register_id": 59,
+        "arrival_time": 594,
+        "type": "nylon",
+        "deadline": "inf",
+        "treatment_time": 0.437488922954156,
+        "emergency_status": true
+    },
+    {
+        "register_id": 60,
+        "arrival_time": 601,
+        "type": "emergence",
+        "deadline": 69,
+        "treatment_time": 35.436087316322656,
+        "emergency_status": true
+    },
+    {
+        "register_id": 61,
+        "arrival_time": 611,
+        "type": "emergence",
+        "deadline": 63,
+        "treatment_time": 11.848612470923698,
+        "emergency_status": true
+    },
+    {
+        "register_id": 62,
+        "arrival_time": 621,
+        "type": "emergence",
+        "deadline": 53,
+        "treatment_time": 262.7194831352647,
+        "emergency_status": true
+    },
+    {
+        "register_id": 63,
+        "arrival_time": 630,
+        "type": "emergence",
+        "deadline": 72,
+        "treatment_time": 10.688277708747261,
+        "emergency_status": true
+    },
+    {
+        "register_id": 64,
+        "arrival_time": 641,
+        "type": "nylon",
+        "deadline": "inf",
+        "treatment_time": 4.101322110107894,
+        "emergency_status": true
+    },
+    {
+        "register_id": 65,
+        "arrival_time": 649,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 4.9308061068114135,
+        "emergency_status": false
+    },
+    {
+        "register_id": 66,
+        "arrival_time": 660,
+        "type": "emergence",
+        "deadline": 61,
+        "treatment_time": 157.97026888125748,
+        "emergency_status": true
+    },
+    {
+        "register_id": 67,
+        "arrival_time": 672,
+        "type": "emergence",
+        "deadline": 51,
+        "treatment_time": 98.51950226187198,
+        "emergency_status": true
+    },
+    {
+        "register_id": 68,
+        "arrival_time": 679,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 7.181153210899259,
+        "emergency_status": false
+    },
+    {
+        "register_id": 69,
+        "arrival_time": 689,
+        "type": "emergence",
+        "deadline": 55,
+        "treatment_time": 5.407129000179801,
+        "emergency_status": true
+    },
+    {
+        "register_id": 70,
+        "arrival_time": 702,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 5.4281211412008235,
+        "emergency_status": false
+    },
+    {
+        "register_id": 71,
+        "arrival_time": 713,
+        "type": "emergence",
+        "deadline": 65,
+        "treatment_time": 206.5479804503722,
+        "emergency_status": true
+    },
+    {
+        "register_id": 72,
+        "arrival_time": 721,
+        "type": "emergence",
+        "deadline": 60,
+        "treatment_time": 46.49849683452672,
+        "emergency_status": true
+    },
+    {
+        "register_id": 73,
+        "arrival_time": 735,
+        "type": "emergence",
+        "deadline": 49,
+        "treatment_time": 13.283324533049534,
+        "emergency_status": true
+    },
+    {
+        "register_id": 74,
+        "arrival_time": 740,
+        "type": "emergence",
+        "deadline": 59,
+        "treatment_time": 104.77111923882464,
+        "emergency_status": true
+    },
+    {
+        "register_id": 75,
+        "arrival_time": 748,
+        "type": "emergence",
+        "deadline": 75,
+        "treatment_time": 32.745295680812774,
+        "emergency_status": true
+    },
+    {
+        "register_id": 76,
+        "arrival_time": 754,
+        "type": "emergence",
+        "deadline": 70,
+        "treatment_time": 222.22756787390844,
+        "emergency_status": true
+    },
+    {
+        "register_id": 77,
+        "arrival_time": 760,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 4.517106425979155,
+        "emergency_status": false
+    },
+    {
+        "register_id": 78,
+        "arrival_time": 770,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 1.5190668120502995,
+        "emergency_status": false
+    },
+    {
+        "register_id": 79,
+        "arrival_time": 777,
+        "type": "emergence",
+        "deadline": 54,
+        "treatment_time": 136.62033256881512,
+        "emergency_status": true
+    },
+    {
+        "register_id": 80,
+        "arrival_time": 779,
+        "type": "emergence",
+        "deadline": 68,
+        "treatment_time": 56.65447073557393,
+        "emergency_status": true
+    },
+    {
+        "register_id": 81,
+        "arrival_time": 788,
+        "type": "nylon",
+        "deadline": "inf",
+        "treatment_time": 0.5435826471183918,
+        "emergency_status": true
+    },
+    {
+        "register_id": 82,
+        "arrival_time": 797,
+        "type": "emergence",
+        "deadline": 64,
+        "treatment_time": 41.005355309276474,
+        "emergency_status": true
+    },
+    {
+        "register_id": 83,
+        "arrival_time": 803,
+        "type": "emergence",
+        "deadline": 56,
+        "treatment_time": 77.09267752715434,
+        "emergency_status": true
+    },
+    {
+        "register_id": 84,
+        "arrival_time": 814,
+        "type": "emergence",
+        "deadline": 51,
+        "treatment_time": 14.334147348037515,
+        "emergency_status": true
+    },
+    {
+        "register_id": 85,
+        "arrival_time": 825,
+        "type": "emergence",
+        "deadline": 54,
+        "treatment_time": 16.662654832978994,
+        "emergency_status": true
+    },
+    {
+        "register_id": 86,
+        "arrival_time": 837,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 12.04544613134683,
+        "emergency_status": false
+    },
+    {
+        "register_id": 87,
+        "arrival_time": 844,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 21.100265226866544,
+        "emergency_status": false
+    },
+    {
+        "register_id": 88,
+        "arrival_time": 854,
+        "type": "emergence",
+        "deadline": 55,
+        "treatment_time": 37.088746090524126,
+        "emergency_status": true
+    },
+    {
+        "register_id": 89,
+        "arrival_time": 867,
+        "type": "nylon",
+        "deadline": "inf",
+        "treatment_time": 0.5949998389497474,
+        "emergency_status": true
+    },
+    {
+        "register_id": 90,
+        "arrival_time": 874,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 4.4329498344719145,
+        "emergency_status": false
+    },
+    {
+        "register_id": 91,
+        "arrival_time": 887,
+        "type": "naive",
+        "deadline": "inf",
+        "treatment_time": 2.41425445684407,
+        "emergency_status": false
+    },
+    {
+        "register_id": 92,
+        "arrival_time": 900,
+        "type": "emergence",
+        "deadline": 70,
+        "treatment_time": 53.32442720378346,
+        "emergency_status": true
+    },
+    {
+        "register_id": 93,
+        "arrival_time": 906,
+        "type": "emergence",
+        "deadline": 48,
+        "treatment_time": 190.30806876413214,
+        "emergency_status": true
+    },
+    {
+        "register_id": 94,
+        "arrival_time": 915,
+        "type": "emergence",
+        "deadline": 72,
+        "treatment_time": 68.8238643903416,
+        "emergency_status": true
+    },
+    {
+        "register_id": 95,
+        "arrival_time": 927,
+        "type": "nylon",
+        "deadline": "inf",
+        "treatment_time": 2.8891677637881767,
+        "emergency_status": true
+    },
+    {
+        "register_id": 96,
+        "arrival_time": 940,
+        "type": "emergence",
+        "deadline": 66,
+        "treatment_time": 28.601756653259002,
+        "emergency_status": true
+    },
+    {
+        "register_id": 97,
+        "arrival_time": 948,
+        "type": "emergence",
+        "deadline": 54,
+        "treatment_time": 87.34625724660401,
+        "emergency_status": true
+    },
+    {
+        "register_id": 98,
+        "arrival_time": 963,
+        "type": "emergence",
+        "deadline": 43,
+        "treatment_time": 11.315699506622213,
+        "emergency_status": true
+    },
+    {
+        "register_id": 99,
+        "arrival_time": 973,
+        "type": "emergence",
+        "deadline": 63,
+        "treatment_time": 72.17876684606297,
+        "emergency_status": true
+    },
+    {
+        "register_id": 100,
+        "arrival_time": 990,
+        "type": "emergence",
+        "deadline": 59,
+        "treatment_time": 36.74771054190578,
+        "emergency_status": true
+    }
+]
