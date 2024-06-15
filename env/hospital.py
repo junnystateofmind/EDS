@@ -6,68 +6,100 @@ from patient import Emergence_Patient, Naive_Patient, Nylon_Patient
 import heapq
 import numpy as np
 
+
 class EmergencyRoom:
-    def __init__(self, env, num_doctors):
+    def __init__(self, env, num_beds, doctor_efficiency):
         self.env = env
-        self.num_doctors = num_doctors
-        self.doctor = simpy.PriorityResource(env, num_doctors)
+        self.beds = [simpy.PriorityResource(env, capacity=1) for _ in range(num_beds)]
         self.queue = []
-        self.treatment_processes = []
         self.logs = []
-        self.bed_logs = {i: [] for i in range(num_doctors)}
+        self.bed_logs = {i: [] for i in range(num_beds)}
+        self.queue_logs = []
+        self.dead_patients = set()
+        self.doctor_efficiency = doctor_efficiency
 
     def add_patient(self, patient):
-        heapq.heappush(self.queue, (patient.get_deadline(), patient))
-        self.logs.append((self.env.now, 'ARRIVE', patient.get_register_id(), patient.get_deadline(), patient.get_emergency_status(), patient.__class__.__name__))
+        if patient in (p[1] for p in self.queue):
+            return
 
-    def treat_patient(self, patient):
-        with self.doctor.request(priority=patient.get_deadline()) as req:
+        heapq.heappush(self.queue, (patient.get_deadline(), patient))
+        self.logs.append((self.env.now, 'ARRIVE', patient.get_register_id(), patient.get_deadline(),
+                          patient.get_emergency_status(), patient.__class__.__name__))
+        self.log_queue_status()
+
+    def treat_patient(self, patient, bed_id):
+        if patient.get_register_id() in self.dead_patients:
+            return
+
+        with self.beds[bed_id].request(priority=patient.get_deadline()) as req:
             yield req
 
             treatment_time = patient.get_treatment_time()
             start_time = self.env.now
-            self.logs.append((start_time, 'START', patient.get_register_id(), patient.get_deadline(), patient.get_emergency_status(), patient.__class__.__name__))
-            self._log_bed_status(start_time, 'OCCUPIED', patient.get_register_id(), patient.__class__.__name__)
+            self.logs.append((start_time, 'START', patient.get_register_id(), patient.get_deadline(),
+                              patient.get_emergency_status(), patient.__class__.__name__))
+            self._log_bed_status(start_time, 'OCCUPIED', bed_id, patient.get_register_id(), patient.__class__.__name__)
 
             while treatment_time > 0:
-                if patient.get_emergency_status():
-                    yield self.env.timeout(treatment_time)
-                    treatment_time = 0
-                else:
-                    remaining_treatment = min(treatment_time, 10)
-                    yield self.env.timeout(remaining_treatment)
-                    treatment_time -= remaining_treatment
+                remaining_treatment = min(treatment_time, 10 / self.doctor_efficiency)
+                yield self.env.timeout(remaining_treatment)
+                treatment_time -= remaining_treatment * self.doctor_efficiency
 
-                    if treatment_time > 0:
-                        self.logs.append((self.env.now, 'PAUSE', patient.get_register_id(), patient.get_deadline(), patient.get_emergency_status(), patient.__class__.__name__))
-                        self._log_bed_status(self.env.now, 'PAUSE', patient.get_register_id(), patient.__class__.__name__)
-                        with self.doctor.request(priority=patient.get_deadline()) as new_req:
-                            yield new_req
-                            self.logs.append((self.env.now, 'RESUME', patient.get_register_id(), patient.get_deadline(), patient.get_emergency_status(), patient.__class__.__name__))
-                            self._log_bed_status(self.env.now, 'RESUME', patient.get_register_id(), patient.__class__.__name__)
+                if treatment_time > 0:
+                    self.logs.append((self.env.now, 'PAUSE', patient.get_register_id(), patient.get_deadline(),
+                                      patient.get_emergency_status(), patient.__class__.__name__))
+                    self._log_bed_status(self.env.now, 'PAUSE', bed_id, patient.get_register_id(),
+                                         patient.__class__.__name__)
+                    with self.beds[bed_id].request(priority=patient.get_deadline()) as new_req:
+                        yield new_req
+                        self.logs.append((self.env.now, 'RESUME', patient.get_register_id(), patient.get_deadline(),
+                                          patient.get_emergency_status(), patient.__class__.__name__))
+                        self._log_bed_status(self.env.now, 'RESUME', bed_id, patient.get_register_id(),
+                                             patient.__class__.__name__)
 
-            if self.env.now > patient.get_deadline() and patient.get_deadline() != np.inf:
-                patient.set_alive(False)
-                self.logs.append((self.env.now, 'DEAD', patient.get_register_id(), patient.get_deadline(), patient.get_emergency_status(), patient.__class__.__name__))
-                self._log_bed_status(self.env.now, 'DEAD', patient.get_register_id(), patient.__class__.__name__)
-            else:
+            if self.env.now <= patient.get_deadline() or patient.get_deadline() == np.inf:
                 patient.set_alive(True)
-                self.logs.append((self.env.now, 'DONE', patient.get_register_id(), patient.get_deadline(), patient.get_emergency_status(), patient.__class__.__name__))
-                self._log_bed_status(self.env.now, 'DONE', patient.get_register_id(), patient.__class__.__name__)
+                self.logs.append((self.env.now, 'DONE', patient.get_register_id(), patient.get_deadline(),
+                                  patient.get_emergency_status(), patient.__class__.__name__))
+                self._log_bed_status(self.env.now, 'DONE', bed_id, patient.get_register_id(),
+                                     patient.__class__.__name__)
+            else:
+                if patient.get_register_id() not in self.dead_patients:
+                    patient.set_alive(False)
+                    self.logs.append((self.env.now, 'DEAD', patient.get_register_id(), patient.get_deadline(),
+                                      patient.get_emergency_status(), patient.__class__.__name__))
+                    self._log_bed_status(self.env.now, 'DEAD', bed_id, patient.get_register_id(),
+                                         patient.__class__.__name__)
+                    self.dead_patients.add(patient.get_register_id())
+                    print(f"Patient {patient.get_register_id()} died at {self.env.now} in bed {bed_id}")
 
-    def _log_bed_status(self, time, status, patient_id, patient_type):
-        for bed_id in range(self.num_doctors):
+            self.log_queue_status()
+
+    def _log_bed_status(self, time, status, bed_id, patient_id, patient_type):
+        if bed_id != -1:
             self.bed_logs[bed_id].append((time, status, patient_id, patient_type))
+        else:
+            self.logs.append((time, status, patient_id, np.inf, False, patient_type))
+
+    def log_queue_status(self):
+        now = self.env.now
+        queue_status = [(patient.get_register_id(), patient.__class__.__name__, patient.get_deadline()) for _, patient in self.queue]
+        self.queue_logs.append((now, len(self.queue), queue_status))
 
     def check_deadlines(self):
         while True:
             now = self.env.now
             while self.queue and self.queue[0][1].get_deadline() < now and self.queue[0][1].get_deadline() != np.inf:
                 _, patient = heapq.heappop(self.queue)
-                patient.set_alive(False)
-                self.logs.append((now, 'DEAD', patient.get_register_id(), patient.get_deadline(), patient.get_emergency_status(), patient.__class__.__name__))
-                self._log_bed_status(now, 'DEAD', patient.get_register_id(), patient.__class__.__name__)
-            yield self.env.timeout(1)  # 1분마다 확인
+                if patient.get_register_id() not in self.dead_patients:
+                    patient.set_alive(False)
+                    self.logs.append((now, 'DEAD', patient.get_register_id(), patient.get_deadline(),
+                                      patient.get_emergency_status(), patient.__class__.__name__))
+                    self._log_bed_status(now, 'DEAD', -1, patient.get_register_id(), patient.__class__.__name__)
+                    self.dead_patients.add(patient.get_register_id())
+                    print(f"Patient {patient.get_register_id()} died at {now} in queue")
+            self.log_queue_status()
+            yield self.env.timeout(1)
 
     def finalize_logs(self):
         now = self.env.now
@@ -75,7 +107,8 @@ class EmergencyRoom:
             _, patient = heapq.heappop(self.queue)
             if patient.get_alive():
                 self.logs.append((now, 'UNFINISHED', patient.get_register_id(), patient.get_deadline(), patient.get_emergency_status(), patient.__class__.__name__))
-                self._log_bed_status(now, 'UNFINISHED', patient.get_register_id(), patient.__class__.__name__)
+                self._log_bed_status(now, 'UNFINISHED', -1, patient.get_register_id(), patient.__class__.__name__)
+        self.log_queue_status()
 
 def load_patient_data(file_path):
     with open(file_path, 'r') as f:
@@ -95,22 +128,27 @@ def patient_generator(env, er, patient_data):
         else:
             patient = Nylon_Patient(register_id, arrival_time)
 
-        yield env.timeout(arrival_time - env.now)  # 다음 환자가 도착할 때까지 대기
+        yield env.timeout(arrival_time - env.now)
         er.add_patient(patient)
-        env.process(er.treat_patient(patient))
 
-def run_simulation(patient_data):
+        for i in range(len(er.beds)):
+            if er.beds[i].count < er.beds[i].capacity:
+                env.process(er.treat_patient(patient, i))
+                break
+
+def run_simulation(patient_data, doctor_efficiency):
     env = simpy.Environment()
-    er = EmergencyRoom(env, num_doctors=4)
+    er = EmergencyRoom(env, num_beds=32, doctor_efficiency=doctor_efficiency)
     env.process(patient_generator(env, er, patient_data))
     env.process(er.check_deadlines())
     env.run(until=1000)
-    er.finalize_logs()  # 시뮬레이션 종료 시 미처리 환자 기록
-    return er.logs, er.bed_logs
+    er.finalize_logs()
+    return er.logs, er.bed_logs, er.queue_logs
 
-def visualize_logs(logs, bed_logs):
+def visualize_logs(logs, bed_logs, queue_logs):
     df = pd.DataFrame(logs, columns=['Time', 'Event', 'PatientID', 'Deadline', 'EmergencyStatus', 'PatientType'])
     bed_df = pd.DataFrame([(bed_id, time, status, patient_id, patient_type) for bed_id, logs in bed_logs.items() for time, status, patient_id, patient_type in logs], columns=['BedID', 'Time', 'Status', 'PatientID', 'PatientType'])
+    queue_df = pd.DataFrame(queue_logs, columns=['Time', 'QueueLength', 'QueueStatus'])
 
     fig, ax = plt.subplots(figsize=(12, 6))
 
@@ -127,7 +165,12 @@ def visualize_logs(logs, bed_logs):
     for patient_id, group in df.groupby('PatientID'):
         times = group['Time']
         events = group['Event']
-        start_time = group[group['Event'] == 'ARRIVE']['Time'].values[0]
+        arrive_event = group[group['Event'] == 'ARRIVE']
+
+        if arrive_event.empty:
+            continue
+
+        start_time = arrive_event['Time'].values[0]
 
         if 'DONE' in events.values:
             end_time = group[group['Event'] == 'DONE']['Time'].values[0]
@@ -136,12 +179,10 @@ def visualize_logs(logs, bed_logs):
         elif 'UNFINISHED' in events.values:
             end_time = group[group['Event'] == 'UNFINISHED']['Time'].values[0]
         else:
-            continue  # 'DONE', 'DEAD', 'UNFINISHED' 이벤트가 없으면 건너뜀
+            continue
 
-        # 선 그리기
         ax.plot([start_time, end_time], [patient_id, patient_id], 'k-', alpha=0.5)
 
-        # 마커 그리기
         for event, color in event_colors.items():
             if event in events.values:
                 event_times = group[group['Event'] == event]['Time']
@@ -153,20 +194,27 @@ def visualize_logs(logs, bed_logs):
     handles, labels = ax.get_legend_handles_labels()
     by_label = dict(zip(labels, handles))
     ax.legend(by_label.values(), by_label.keys())
+
     plt.show()
 
-    # 로그를 CSV 파일로 저장
     df.to_csv('simulation_logs.csv', index=False)
     bed_df.to_csv('bed_logs.csv', index=False)
+    queue_df.to_csv('queue_logs.csv', index=False)
     print("Logs saved to simulation_logs.csv")
     print("Bed logs saved to bed_logs.csv")
+    print("Queue logs saved to queue_logs.csv")
 
-    # 사망한 환자 로그 출력
     dead_patients = df[df['Event'] == 'DEAD']
     print("\nDead Patients Logs:")
     print(dead_patients[['Time', 'PatientID', 'PatientType', 'Deadline']].to_string(index=False))
 
+    final_status_df = df[df['Event'].isin(['DONE', 'DEAD', 'UNFINISHED'])].copy()
+    final_status_df.sort_values(by=['PatientID', 'Time'], inplace=True)
+    final_status_df.drop_duplicates(subset=['PatientID'], keep='last', inplace=True)
+    final_status_df.to_csv('final_patient_status.csv', index=False)
+    print("Final patient status saved to final_patient_status.csv")
+
 if __name__ == "__main__":
     patient_data = load_patient_data('patient_data.json')
-    logs, bed_logs = run_simulation(patient_data)
-    visualize_logs(logs, bed_logs)
+    logs, bed_logs, queue_logs = run_simulation(patient_data, doctor_efficiency=5.0)
+    visualize_logs(logs, bed_logs, queue_logs)

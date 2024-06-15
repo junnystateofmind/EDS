@@ -52,8 +52,8 @@ class Emergence_Patient(Patient):
     def __init__(self, register_id, arrival_time):
         super().__init__(register_id, arrival_time)
         self.set_emergency()
-        self.set_deadline(np.random.poisson(60, 1)[0])
-        self.set_treatment_time(np.random.exponential(60))  # 평균 60분 치료 시간
+        self.set_deadline(arrival_time + int(np.random.exponential(scale=60)))  # 지수 분포로 데드라인 설정
+        self.set_treatment_time(int(np.random.exponential(scale=30)))  # 지수 분포로 치료 시간 생성
 
     def __str__(self):
         return "Register ID: {}, Emergency: {}, Deadline: {}, Alive: {}, Treatment Time: {}".format(
@@ -63,7 +63,7 @@ class Naive_Patient(Patient):
     def __init__(self, register_id, arrival_time):
         super().__init__(register_id, arrival_time)
         self.set_deadline(np.inf)  # 무한대 데드라인
-        self.set_treatment_time(np.random.exponential(10))  # 평균 30분 치료 시간
+        self.set_treatment_time(int(np.random.normal(loc=30, scale=10)))  # 정규 분포로 치료 시간 생성
 
     def __str__(self):
         return "Register ID: {}, Emergency: {}, Deadline: {}, Alive: {}, Treatment Time: {}".format(
@@ -74,7 +74,7 @@ class Nylon_Patient(Patient):
         super().__init__(register_id, arrival_time)
         self.set_emergency()
         self.set_deadline(np.inf)  # 무한대 데드라인
-        self.set_treatment_time(np.random.exponential(3))  # 평균 10분 치료 시간
+        self.set_treatment_time(int(np.random.exponential(scale=10)))  # 지수 분포로 치료 시간 생성
 
     def __str__(self):
         return "Register ID: {}, Emergency: {}, Deadline: {}, Alive: {}, Treatment Time: {}".format(
