@@ -34,16 +34,29 @@ class EmergencyRoom:
         with self.beds[bed_id].request(priority=patient.get_deadline()) as req:
             yield req
 
+            # 치료 시작 시 데드라인을 초과했는지 확인
+            if self.env.now > patient.get_deadline() and patient.get_deadline() != np.inf:
+                patient.set_alive(False)
+                self.logs.append((self.env.now, 'DEAD', patient.get_register_id(), patient.get_deadline(),
+                                  patient.get_emergency_status(), patient.__class__.__name__))
+                self._log_bed_status(self.env.now, 'DEAD', bed_id, patient.get_register_id(),
+                                     patient.__class__.__name__)
+                self.dead_patients.add(patient.get_register_id())
+                print(f"Patient {patient.get_register_id()} died at {self.env.now} in bed {bed_id} (start check)")
+                return
+
             treatment_time = patient.get_treatment_time()
             start_time = self.env.now
+            patient.set_start_time(start_time)  # 치료 시작 시간 설정
             self.logs.append((start_time, 'START', patient.get_register_id(), patient.get_deadline(),
                               patient.get_emergency_status(), patient.__class__.__name__))
             self._log_bed_status(start_time, 'OCCUPIED', bed_id, patient.get_register_id(), patient.__class__.__name__)
 
             while treatment_time > 0:
-                remaining_treatment = min(treatment_time, 10 / self.doctor_efficiency)
-                yield self.env.timeout(remaining_treatment)
-                treatment_time -= remaining_treatment * self.doctor_efficiency
+                # 의사의 효율성을 고려한 치료 시간 감소
+                remaining_treatment = min(treatment_time, 10 * self.doctor_efficiency)
+                yield self.env.timeout(remaining_treatment / self.doctor_efficiency)
+                treatment_time -= remaining_treatment
 
                 if treatment_time > 0:
                     self.logs.append((self.env.now, 'PAUSE', patient.get_register_id(), patient.get_deadline(),
@@ -57,12 +70,16 @@ class EmergencyRoom:
                         self._log_bed_status(self.env.now, 'RESUME', bed_id, patient.get_register_id(),
                                              patient.__class__.__name__)
 
+            # 치료가 완료된 후 처리
             if self.env.now <= patient.get_deadline() or patient.get_deadline() == np.inf:
                 patient.set_alive(True)
                 self.logs.append((self.env.now, 'DONE', patient.get_register_id(), patient.get_deadline(),
                                   patient.get_emergency_status(), patient.__class__.__name__))
                 self._log_bed_status(self.env.now, 'DONE', bed_id, patient.get_register_id(),
                                      patient.__class__.__name__)
+                # 환자가 치료를 완료한 후 큐에서 제거
+                self.queue = [(d, p) for d, p in self.queue if p.get_register_id() != patient.get_register_id()]
+                heapq.heapify(self.queue)
             else:
                 if patient.get_register_id() not in self.dead_patients:
                     patient.set_alive(False)
@@ -78,8 +95,6 @@ class EmergencyRoom:
     def _log_bed_status(self, time, status, bed_id, patient_id, patient_type):
         if bed_id != -1:
             self.bed_logs[bed_id].append((time, status, patient_id, patient_type))
-        else:
-            self.logs.append((time, status, patient_id, np.inf, False, patient_type))
 
     def log_queue_status(self):
         now = self.env.now
