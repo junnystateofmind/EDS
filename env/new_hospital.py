@@ -276,8 +276,23 @@ if __name__ == "__main__":
 if __name__ == "__main__":
     all_patient_data = load_patient_data('patient_data_sequences.json')
     all_logs = []
-    for patient_data in all_patient_data:
+    all_bed_logs = []
+    all_queue_logs = []
+    for i, patient_data in enumerate(all_patient_data):
         logs, bed_logs, queue_logs = run_simulation(patient_data, doctor_efficiency=5.0)
-        all_logs.append(logs)
+        for log in logs:
+            log = list(log)
+            log.insert(0, i)
+            all_logs.append(log)
+        for bed_log in bed_logs.values():
+            for log in bed_log:
+                log = list(log)
+                log.insert(0, i)
+                all_bed_logs.append(log)
+        for queue_log in queue_logs:
+            queue_log = list(queue_log)
+            queue_log.insert(0, i)
+            all_queue_logs.append(queue_log)
+    visualize_logs(all_logs, all_bed_logs, all_queue_logs)
     # 전체 로그를 사용하여 시각화 또는 분석
     # visualize_logs를 호출할 때 all_logs를 사용하여 적절히 수정
