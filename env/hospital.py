@@ -160,10 +160,10 @@ def run_simulation(patient_data, doctor_efficiency):
     er.finalize_logs()
     return er.logs, er.bed_logs, er.queue_logs
 
-def visualize_logs(logs, bed_logs, queue_logs):
-    df = pd.DataFrame(logs, columns=['Time', 'Event', 'PatientID', 'Deadline', 'EmergencyStatus', 'PatientType'])
-    bed_df = pd.DataFrame([(bed_id, time, status, patient_id, patient_type) for bed_id, logs in bed_logs.items() for time, status, patient_id, patient_type in logs], columns=['BedID', 'Time', 'Status', 'PatientID', 'PatientType'])
-    queue_df = pd.DataFrame(queue_logs, columns=['Time', 'QueueLength', 'QueueStatus'])
+def visualize_logs(all_logs, all_bed_logs, all_queue_logs):
+    df = pd.DataFrame(all_logs, columns=['Sequence', 'Time', 'Event', 'PatientID', 'Deadline', 'EmergencyStatus', 'PatientType'])
+    bed_df = pd.DataFrame(all_bed_logs, columns=['Sequence', 'BedID', 'Time', 'Status', 'PatientID', 'PatientType'])
+    queue_df = pd.DataFrame(all_queue_logs, columns=['Sequence', 'Time', 'QueueLength', 'QueueStatus'])
 
     fig, ax = plt.subplots(figsize=(12, 6))
 
@@ -210,7 +210,9 @@ def visualize_logs(logs, bed_logs, queue_logs):
     by_label = dict(zip(labels, handles))
     ax.legend(by_label.values(), by_label.keys())
 
-    plt.show()
+    # plt.show()
+    # 가시화하지 않고 이미지 저장
+    plt.savefig('./simulation_logs.png')
 
     df.to_csv('simulation_logs.csv', index=False)
     bed_df.to_csv('bed_logs.csv', index=False)
@@ -221,7 +223,7 @@ def visualize_logs(logs, bed_logs, queue_logs):
 
     dead_patients = df[df['Event'] == 'DEAD']
     print("\nDead Patients Logs:")
-    print(dead_patients[['Time', 'PatientID', 'PatientType', 'Deadline']].to_string(index=False))
+    print(dead_patients[['Sequence', 'Time', 'PatientID', 'PatientType', 'Deadline']].to_string(index=False))
 
     final_status_df = df[df['Event'].isin(['DONE', 'DEAD', 'UNFINISHED'])].copy()
     final_status_df.sort_values(by=['PatientID', 'Time'], inplace=True)
@@ -230,6 +232,17 @@ def visualize_logs(logs, bed_logs, queue_logs):
     print("Final patient status saved to final_patient_status.csv")
 
 if __name__ == "__main__":
-    patient_data = load_patient_data('patient_data.json')
-    logs, bed_logs, queue_logs = run_simulation(patient_data, doctor_efficiency=5.0)
-    visualize_logs(logs, bed_logs, queue_logs)
+    all_patient_data = load_patient_data('patient_data_sequences.json')
+    all_logs = []
+    all_bed_logs = []
+    all_queue_logs = []
+    for sequence_num, patient_data in enumerate(all_patient_data):
+        logs, bed_logs, queue_logs = run_simulation(patient_data, doctor_efficiency=5.0)
+        for log in logs:
+            all_logs.append((sequence_num, *log))
+        for bed_log in bed_logs:
+            for bed_entry in bed_logs[bed_log]:
+                all_bed_logs.append((sequence_num, bed_log, *bed_entry))
+        for queue_log in queue_logs:
+            all_queue_logs.append((sequence_num, *queue_log))
+    visualize_logs(all_logs, all_bed_logs, all_queue_logs)

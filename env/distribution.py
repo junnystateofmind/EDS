@@ -2,13 +2,10 @@ import json
 import numpy as np
 from patient import Emergence_Patient, Naive_Patient, Nylon_Patient
 
-
 def generate_patient_data(lam, num_patients):
-    # prob을 생성하기 위한 data
     data = [475 + 75 + 80 + 109 + 45, 387]
     data = np.array(data)
     prob = data / data.sum()
-    # naive, nylon 환자 구분
     naive_percent = 0.8
     prob = np.array([prob[0], prob[1] * naive_percent, prob[1] * (1 - naive_percent)])
 
@@ -39,19 +36,22 @@ def generate_patient_data(lam, num_patients):
 
     return patient_data
 
-
 # Parameters
 lam = 10  # 평균 도착 시간
 num_patients = 100  # 생성할 환자 수
+num_sequences = 1000  # 생성할 데이터 시퀀스 수
 
-# Generate patient data
-patient_data = generate_patient_data(lam, num_patients)
+all_patient_data = []
+
+for _ in range(num_sequences):
+    patient_data = generate_patient_data(lam, num_patients)
+    all_patient_data.append(patient_data)
 
 # Save to JSON file
-with open('patient_data.json', 'w') as f:
-    json.dump(patient_data, f, indent=4)
+with open('patient_data_sequences.json', 'w') as f:
+    json.dump(all_patient_data, f, indent=4)
 
 # 확인을 위해 JSON 파일 내용을 출력
-with open('patient_data.json', 'r') as f:
+with open('patient_data_sequences.json', 'r') as f:
     data = f.read()
-    print(data)
+    print(data[:1000])  # 처음 1000자만 출력

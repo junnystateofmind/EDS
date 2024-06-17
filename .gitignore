@@ -1,0 +1,10 @@
+env/image/
+env/bed_log.csv
+env/final_patient_status.csv
+env/new_bed_logs.csv
+env/new_final_patient_status.csv
+env/new_queue_logs.csv
+env/new_simulation_logs.csv
+env/que_logs.csv
+env/simulation_logs.csv
+env/patient_data.json

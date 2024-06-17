@@ -186,10 +186,10 @@ def run_simulation(patient_data, doctor_efficiency):
     er.finalize_logs()
     return er.logs, er.bed_logs, er.queue_logs
 
-def visualize_logs(logs, bed_logs, queue_logs):
-    df = pd.DataFrame(logs, columns=['Time', 'Event', 'PatientID', 'Deadline', 'EmergencyStatus', 'PatientType'])
-    bed_df = pd.DataFrame([(bed_id, time, status, patient_id, patient_type) for bed_id, logs in bed_logs.items() for time, status, patient_id, patient_type in logs], columns=['BedID', 'Time', 'Status', 'PatientID', 'PatientType'])
-    queue_df = pd.DataFrame(queue_logs, columns=['Time', 'QueueLength', 'QueueStatus'])
+def visualize_logs(all_logs, all_bed_logs, all_queue_logs):
+    logs_df = pd.concat([pd.DataFrame(logs, columns=['Sequence', 'Time', 'Event', 'PatientID', 'Deadline', 'EmergencyStatus', 'PatientType']) for logs in all_logs])
+    bed_logs_df = pd.concat([pd.DataFrame([(seq, bed_id, time, status, patient_id, patient_type) for (seq, bed_logs) in seq_bed_logs.items() for bed_id, logs in bed_logs.items() for time, status, patient_id, patient_type in logs], columns=['Sequence', 'BedID', 'Time', 'Status', 'PatientID', 'PatientType']) for seq_bed_logs in all_bed_logs])
+    queue_logs_df = pd.concat([pd.DataFrame([(seq, time, length, status) for (seq, logs) in seq_queue_logs.items() for time, length, status in logs], columns=['Sequence', 'Time', 'QueueLength', 'QueueStatus']) for seq_queue_logs in all_queue_logs])
 
     fig, ax = plt.subplots(figsize=(12, 6))
 
@@ -203,7 +203,7 @@ def visualize_logs(logs, bed_logs, queue_logs):
         'UNFINISHED': 'grey'
     }
 
-    for patient_id, group in df.groupby('PatientID'):
+    for patient_id, group in logs_df.groupby('PatientID'):
         times = group['Time']
         events = group['Event']
         arrive_event = group[group['Event'] == 'ARRIVE']
@@ -238,24 +238,46 @@ def visualize_logs(logs, bed_logs, queue_logs):
 
     plt.show()
 
-    df.to_csv('new_simulation_logs.csv', index=False)
-    bed_df.to_csv('new_bed_logs.csv', index=False)
-    queue_df.to_csv('new_queue_logs.csv', index=False)
+    logs_df.to_csv('new_simulation_logs.csv', index=False)
+    bed_logs_df.to_csv('new_bed_logs.csv', index=False)
+    queue_logs_df.to_csv('new_queue_logs.csv', index=False)
     print("Logs saved to new_simulation_logs.csv")
     print("Bed logs saved to new_bed_logs.csv")
     print("Queue logs saved to new_queue_logs.csv")
 
-    dead_patients = df[df['Event'] == 'DEAD']
+    dead_patients = logs_df[logs_df['Event'] == 'DEAD']
     print("\nDead Patients Logs:")
-    print(dead_patients[['Time', 'PatientID', 'PatientType', 'Deadline']].to_string(index=False))
+    print(dead_patients[['Sequence', 'Time', 'PatientID', 'PatientType', 'Deadline']].to_string(index=False))
 
-    final_status_df = df[df['Event'].isin(['DONE', 'DEAD', 'UNFINISHED'])].copy()
+    final_status_df = logs_df[logs_df['Event'].isin(['DONE', 'DEAD', 'UNFINISHED'])].copy()
     final_status_df.sort_values(by=['PatientID', 'Time'], inplace=True)
     final_status_df.drop_duplicates(subset=['PatientID'], keep='last', inplace=True)
     final_status_df.to_csv('new_final_patient_status.csv', index=False)
-    print("Final patient status saved to final_patient_status.csv")
+    print("Final patient status saved to new_final_patient_status.csv")
 
 if __name__ == "__main__":
-    patient_data = load_patient_data('patient_data.json')
-    logs, bed_logs, queue_logs = run_simulation(patient_data, doctor_efficiency=5.0)
-    visualize_logs(logs, bed_logs, queue_logs)
+    all_patient_data = load_patient_data('patient_data_sequences.json')
+    all_logs = []
+    all_bed_logs = []
+    all_queue_logs = []
+    for i, patient_data in enumerate(all_patient_data):
+        logs, bed_logs, queue_logs = run_simulation(patient_data, doctor_efficiency=5.0)
+        for log in logs:
+            log.insert(0, i)
+        for bed_id in bed_logs:
+            for bed_log in bed_logs[bed_id]:
+                bed_log.insert(0, i)
+        for queue_log in queue_logs:
+            queue_log.insert(0, i)
+        all_logs.append(logs)
+        all_bed_logs.append(bed_logs)
+        all_queue_logs.append(queue_logs)
+    visualize_logs(all_logs, all_bed_logs, all_queue_logs)
+if __name__ == "__main__":
+    all_patient_data = load_patient_data('patient_data_sequences.json')
+    all_logs = []
+    for patient_data in all_patient_data:
+        logs, bed_logs, queue_logs = run_simulation(patient_data, doctor_efficiency=5.0)
+        all_logs.append(logs)
+    # 전체 로그를 사용하여 시각화 또는 분석
+    # visualize_logs를 호출할 때 all_logs를 사용하여 적절히 수정
