@@ -1,3 +1,4 @@
+import os
 import simpy
 import json
 import pandas as pd
@@ -34,7 +35,6 @@ class EmergencyRoom:
         with self.beds[bed_id].request(priority=patient.get_deadline()) as req:
             yield req
 
-            # 치료 시작 시 데드라인을 초과했는지 확인
             if self.env.now > patient.get_deadline() and patient.get_deadline() != np.inf:
                 patient.set_alive(False)
                 self.logs.append((self.env.now, 'DEAD', patient.get_register_id(), patient.get_deadline(),
@@ -98,7 +98,8 @@ class EmergencyRoom:
 
     def log_queue_status(self):
         now = self.env.now
-        queue_status = [(patient.get_register_id(), patient.__class__.__name__, patient.get_deadline()) for _, patient in self.queue]
+        queue_status = [(patient.get_register_id(), patient.__class__.__name__, patient.get_deadline()) for _, patient
+                        in self.queue]
         self.queue_logs.append((now, len(self.queue), queue_status))
 
     def check_deadlines(self):
@@ -121,14 +122,17 @@ class EmergencyRoom:
         while self.queue:
             _, patient = heapq.heappop(self.queue)
             if patient.get_alive():
-                self.logs.append((now, 'UNFINISHED', patient.get_register_id(), patient.get_deadline(), patient.get_emergency_status(), patient.__class__.__name__))
+                self.logs.append((now, 'UNFINISHED', patient.get_register_id(), patient.get_deadline(),
+                                  patient.get_emergency_status(), patient.__class__.__name__))
                 self._log_bed_status(now, 'UNFINISHED', -1, patient.get_register_id(), patient.__class__.__name__)
         self.log_queue_status()
+
 
 def load_patient_data(file_path):
     with open(file_path, 'r') as f:
         patient_data = json.load(f)
     return patient_data
+
 
 def patient_generator(env, er, patient_data):
     for patient_info in patient_data:
@@ -151,6 +155,7 @@ def patient_generator(env, er, patient_data):
                 env.process(er.treat_patient(patient, i))
                 break
 
+
 def run_simulation(patient_data, doctor_efficiency):
     env = simpy.Environment()
     er = EmergencyRoom(env, num_beds=32, doctor_efficiency=doctor_efficiency)
@@ -160,10 +165,11 @@ def run_simulation(patient_data, doctor_efficiency):
     er.finalize_logs()
     return er.logs, er.bed_logs, er.queue_logs
 
+
 def visualize_logs(all_logs, all_bed_logs, all_queue_logs):
-    df = pd.DataFrame(all_logs, columns=['Sequence', 'Time', 'Event', 'PatientID', 'Deadline', 'EmergencyStatus', 'PatientType'])
-    bed_df = pd.DataFrame(all_bed_logs, columns=['Sequence', 'BedID', 'Time', 'Status', 'PatientID', 'PatientType'])
-    queue_df = pd.DataFrame(all_queue_logs, columns=['Sequence', 'Time', 'QueueLength', 'QueueStatus'])
+    logs_df = pd.DataFrame(all_logs, columns=['Sequence', 'Time', 'Event', 'PatientID', 'Deadline', 'EmergencyStatus', 'PatientType'])
+    bed_logs_df = pd.DataFrame(all_bed_logs, columns=['Sequence', 'BedID', 'Time', 'Status', 'PatientID', 'PatientType'])
+    queue_logs_df = pd.DataFrame(all_queue_logs, columns=['Sequence', 'Time', 'QueueLength', 'QueueStatus'])
 
     fig, ax = plt.subplots(figsize=(12, 6))
 
@@ -177,7 +183,7 @@ def visualize_logs(all_logs, all_bed_logs, all_queue_logs):
         'UNFINISHED': 'grey'
     }
 
-    for patient_id, group in df.groupby('PatientID'):
+    for patient_id, group in logs_df.groupby('PatientID'):
         times = group['Time']
         events = group['Event']
         arrive_event = group[group['Event'] == 'ARRIVE']
@@ -210,28 +216,30 @@ def visualize_logs(all_logs, all_bed_logs, all_queue_logs):
     by_label = dict(zip(labels, handles))
     ax.legend(by_label.values(), by_label.keys())
 
-    # plt.show()
-    # 가시화하지 않고 이미지 저장
-    plt.savefig('./simulation_logs.png')
+    plt.savefig('./hospital/image/simulation_logs.png')
 
-    df.to_csv('simulation_logs.csv', index=False)
-    bed_df.to_csv('bed_logs.csv', index=False)
-    queue_df.to_csv('queue_logs.csv', index=False)
-    print("Logs saved to simulation_logs.csv")
-    print("Bed logs saved to bed_logs.csv")
-    print("Queue logs saved to queue_logs.csv")
+    logs_df.to_csv('./hospital/simulation_logs.csv', index=False)
+    bed_logs_df.to_csv('./hospital/bed_logs.csv', index=False)
+    queue_logs_df.to_csv('./hospital/queue_logs.csv', index=False)
+    print("Logs saved to hospital/simulation_logs.csv")
+    print("Bed logs saved to hospital/bed_logs.csv")
+    print("Queue logs saved to hospital/queue_logs.csv")
 
-    dead_patients = df[df['Event'] == 'DEAD']
+    dead_patients = logs_df[logs_df['Event'] == 'DEAD']
     print("\nDead Patients Logs:")
     print(dead_patients[['Sequence', 'Time', 'PatientID', 'PatientType', 'Deadline']].to_string(index=False))
 
-    final_status_df = df[df['Event'].isin(['DONE', 'DEAD', 'UNFINISHED'])].copy()
+    final_status_df = logs_df[logs_df['Event'].isin(['DONE', 'DEAD', 'UNFINISHED'])].copy()
     final_status_df.sort_values(by=['PatientID', 'Time'], inplace=True)
     final_status_df.drop_duplicates(subset=['PatientID'], keep='last', inplace=True)
-    final_status_df.to_csv('final_patient_status.csv', index=False)
-    print("Final patient status saved to final_patient_status.csv")
+    final_status_df.to_csv('./hospital/final_patient_status.csv', index=False)
+    print("Final patient status saved to hospital/final_patient_status.csv")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+# Create directories if they do not exist
+    os.makedirs('./hospital', exist_ok=True)
+    os.makedirs('./hospital/image', exist_ok=True)
+
     all_patient_data = load_patient_data('patient_data_sequences.json')
     all_logs = []
     all_bed_logs = []

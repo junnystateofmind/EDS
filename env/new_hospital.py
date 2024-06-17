@@ -1,3 +1,4 @@
+import os
 import simpy
 import json
 import pandas as pd
@@ -236,44 +237,43 @@ def visualize_logs(all_logs, all_bed_logs, all_queue_logs):
     by_label = dict(zip(labels, handles))
     ax.legend(by_label.values(), by_label.keys())
 
-    plt.savefig('./simulation_logs.png')
+    # plt.show()
+    # 가시화하지 않고 이미지 저장
+    plt.savefig('./hospital/image/simulation_logs.png')
 
-    logs_df.to_csv('simulation_logs.csv', index=False)
-    bed_logs_df.to_csv('bed_logs.csv', index=False)
-    queue_logs_df.to_csv('queue_logs.csv', index=False)
+    logs_df.to_csv('./new_hospital/simulation_logs.csv', index=False)
+    bed_logs_df.to_csv('./new_hospital/bed_logs.csv', index=False)
+    queue_logs_df.to_csv('./new_hospital/queue_logs.csv', index=False)
     print("Logs saved to simulation_logs.csv")
     print("Bed logs saved to bed_logs.csv")
     print("Queue logs saved to queue_logs.csv")
 
     dead_patients = logs_df[logs_df['Event'] == 'DEAD']
     print("\nDead Patients Logs:")
-    print(dead_patients[['Time', 'PatientID', 'PatientType', 'Deadline']].to_string(index=False))
+    print(dead_patients[['Sequence', 'Time', 'PatientID', 'PatientType', 'Deadline']].to_string(index=False))
 
     final_status_df = logs_df[logs_df['Event'].isin(['DONE', 'DEAD', 'UNFINISHED'])].copy()
     final_status_df.sort_values(by=['PatientID', 'Time'], inplace=True)
     final_status_df.drop_duplicates(subset=['PatientID'], keep='last', inplace=True)
-    final_status_df.to_csv('final_patient_status.csv', index=False)
+    final_status_df.to_csv('./new_hospital/final_patient_status.csv', index=False)
     print("Final patient status saved to final_patient_status.csv")
 
 if __name__ == "__main__":
+    # Create directories if they do not exist
+    os.makedirs('./new_hospital', exist_ok=True)
+    os.makedirs('./hospital/image', exist_ok=True)
+
     all_patient_data = load_patient_data('patient_data_sequences.json')
     all_logs = []
     all_bed_logs = []
     all_queue_logs = []
-    for i, patient_data in enumerate(all_patient_data):  # I를 i로 변경
+    for sequence_num, patient_data in enumerate(all_patient_data):
         logs, bed_logs, queue_logs = run_simulation(patient_data, doctor_efficiency=5.0)
         for log in logs:
-            log = list(log)
-            log.insert(0, i)
-            all_logs.append(log)
-        for bed_id, bed_log in bed_logs.items():
-            for log in bed_log:
-                log = list(log)
-                log.insert(0, i)
-                log.insert(1, bed_id)  # bed_id 추가
-                all_bed_logs.append(log)
+            all_logs.append((sequence_num, *log))
+        for bed_log in bed_logs:
+            for bed_entry in bed_logs[bed_log]:
+                all_bed_logs.append((sequence_num, bed_log, *bed_entry))
         for queue_log in queue_logs:
-            queue_log = list(queue_log)
-            queue_log.insert(0, i)
-            all_queue_logs.append(queue_log)
+            all_queue_logs.append((sequence_num, *queue_log))
     visualize_logs(all_logs, all_bed_logs, all_queue_logs)
