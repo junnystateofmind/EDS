@@ -263,24 +263,6 @@ if __name__ == "__main__":
     for i, patient_data in enumerate(all_patient_data):
         logs, bed_logs, queue_logs = run_simulation(patient_data, doctor_efficiency=5.0)
         for log in logs:
-            log.insert(0, i)
-        for bed_id in bed_logs:
-            for bed_log in bed_logs[bed_id]:
-                bed_log.insert(0, i)
-        for queue_log in queue_logs:
-            queue_log.insert(0, i)
-        all_logs.append(logs)
-        all_bed_logs.append(bed_logs)
-        all_queue_logs.append(queue_logs)
-    visualize_logs(all_logs, all_bed_logs, all_queue_logs)
-if __name__ == "__main__":
-    all_patient_data = load_patient_data('patient_data_sequences.json')
-    all_logs = []
-    all_bed_logs = []
-    all_queue_logs = []
-    for i, patient_data in enumerate(all_patient_data):
-        logs, bed_logs, queue_logs = run_simulation(patient_data, doctor_efficiency=5.0)
-        for log in logs:
             log = list(log)
             log.insert(0, i)
             all_logs.append(log)
